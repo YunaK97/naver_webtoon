@@ -22,6 +22,12 @@ try {
             header('Content-Type: text/html; charset=UTF-8');
             getLogs("./logs/errors.log");
             break;
+        case "test":
+            http_response_code(200);
+            $res->isSuccess = TRUE;
+            $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
         /*
          * API No. 4
          * API Name : 테스트 API
