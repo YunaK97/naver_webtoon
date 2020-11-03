@@ -26,7 +26,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/users', ['IndexController', 'getUsers']);
     $r->addRoute('GET', '/users/{userIdx}', ['IndexController', 'getUserDetail']);
     $r->addRoute('POST', '/user', ['IndexController', 'createUser']); // 비밀번호 해싱 예시 추가
-
+    $r->addRoute('GET', '/usertest', ['UserController', 'test']); //controller test
 
 
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
@@ -85,30 +85,30 @@ switch ($routeInfo[0]) {
                 $vars = $routeInfo[2];
                 require './controllers/JWTController.php';
                 break;
-            /*case 'EventController':
+            case 'UserController':
                 $handler = $routeInfo[1][1]; $vars = $routeInfo[2];
-                require './controllers/EventController.php';
+                require './controllers/UserController.php';
                 break;
-            case 'ProductController':
+            case 'WebtoonController':
                 $handler = $routeInfo[1][1]; $vars = $routeInfo[2];
-                require './controllers/ProductController.php';
+                require './controllers/WebtoonController.php';
                 break;
             case 'SearchController':
                 $handler = $routeInfo[1][1]; $vars = $routeInfo[2];
                 require './controllers/SearchController.php';
                 break;
-            case 'ReviewController':
+            case 'CommentController':
                 $handler = $routeInfo[1][1]; $vars = $routeInfo[2];
-                require './controllers/ReviewController.php';
+                require './controllers/CommentController.php';
                 break;
-            case 'ElementController':
-                $handler = $routeInfo[1][1]; $vars = $routeInfo[2];
-                require './controllers/ElementController.php';
-                break;
-            case 'AskFAQController':
-                $handler = $routeInfo[1][1]; $vars = $routeInfo[2];
-                require './controllers/AskFAQController.php';
-                break;*/
+//            case 'ElementController':
+//                $handler = $routeInfo[1][1]; $vars = $routeInfo[2];
+//                require './controllers/ElementController.php';
+//                break;
+//            case 'AskFAQController':
+//                $handler = $routeInfo[1][1]; $vars = $routeInfo[2];
+//                require './controllers/AskFAQController.php';
+//                break;
         }
 
         break;
