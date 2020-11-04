@@ -3,6 +3,7 @@
 require './pdos/DatabasePdo.php';
 require './pdos/IndexPdo.php';
 require './pdos/JWTPdo.php';
+require './pdos/webtoonPdo.php';
 require './vendor/autoload.php';
 
 use \Monolog\Logger as Logger;
@@ -27,8 +28,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/users/{userIdx}', ['IndexController', 'getUserDetail']);
     $r->addRoute('POST', '/user', ['IndexController', 'createUser']); // 비밀번호 해싱 예시 추가
     $r->addRoute('GET', '/usertest', ['UserController', 'test']); //controller test
-
-
+    /* ******************   WEBTOON   ****************** */
+    $r->addRoute('GET', '/mainpage', ['WebtoonController', 'main']); //controller test
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)
 //    $r->addRoute('GET', '/user/{id:\d+}', 'get_user_handler');
