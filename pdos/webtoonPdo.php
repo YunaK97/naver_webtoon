@@ -4,14 +4,54 @@
 function mainscreen($keyword)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT idx,title,author,thumbnail,starscore
-FROM WEBTOON
- join DATE ON DATE.webtoon_idx=WEBTOON.idx
-left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
-WHERE days=? and is_completed='N'
-order by starscore desc;";
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore
+                FROM WEBTOON
+                join DATE ON DATE.webtoon_idx=WEBTOON.idx
+                left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+                WHERE days=? and is_completed='N'
+                order by starscore desc";
     $st = $pdo->prepare($query);
    $st->execute([$keyword]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenNew()
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore
+        FROM WEBTOON
+         join DATE ON DATE.webtoon_idx=WEBTOON.idx
+        left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+        WHERE TIMESTAMPDIFF(MONTH,updated_at,NOW())<1 AND is_completed='N'
+        order by starscore desc;";
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenComplete()
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore
+                FROM WEBTOON
+                join DATE ON DATE.webtoon_idx=WEBTOON.idx
+                left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+                WHERE is_completed='Y'
+                order by starscore desc;";
+    $st = $pdo->prepare($query);
+    $st->execute();
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
