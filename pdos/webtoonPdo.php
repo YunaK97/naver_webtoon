@@ -59,7 +59,46 @@ function mainscreenComplete()
 
     return $res;
 }
+//READ
+function getWebtoonDetail($webtoonIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,details,profile,CASE WHEN daycount=1 THEN CONCAT(days,'요웹툰')
+    WHEN daycount>=2 then CONCAT(group_concat(days separator ','),' 연재')
+    else 0
+    END days,ifnull(favorite_count,0) as favorite_count
+FROM WEBTOON
+left JOIN (SELECT webtoon_idx,COUNT(*) AS daycount FROM `DATE` group by webtoon_idx) as TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+left join DATE ON DATE.webtoon_idx=WEBTOON.idx
+left join(SELECT webtoon_idx,COUNT(*) AS favorite_count FROM `FAVORITES` group by webtoon_idx) AS TEMP2 ON TEMP2.webtoon_idx=WEBTOON.idx
+WHERE idx=?;";
+    $st = $pdo->prepare($query);
+    $st->execute([$webtoonIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
 
+    $st = null;
+    $pdo = null;
+
+    return $res[0];
+}
+//READ
+function isValidWebtoonIdx($webtoonIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "select EXISTS(select * from WEBTOON where idx = ?) exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$webtoonIdx]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['exist'];
+}
 
 
 // CREATE

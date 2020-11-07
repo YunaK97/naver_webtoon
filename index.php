@@ -33,6 +33,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     /* ******************   WEBTOON   ****************** */
     $r->addRoute('GET', '/mainpage', ['WebtoonController', 'main']); // 인기순 / 추천순 등등 update 해야함
     $r->addRoute('GET', '/search', ['SearchController', 'search']); // order by 고민
+    $r->addRoute('GET', '/webtoons/{webtoonIdx}', ['WebtoonController', 'getWebtoonDetail']); // order by 고민
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)
 //    $r->addRoute('GET', '/user/{id:\d+}', 'get_user_handler');

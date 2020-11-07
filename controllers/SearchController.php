@@ -23,14 +23,14 @@ try {
             getLogs("./logs/errors.log");
             break;
         /*
-      * API No. 1
-      * API Name : mainscreen
-      * 마지막 수정 날짜 : 20.11.04
+      * API No. 2
+      * API Name : 웹툰 검색
+      * 마지막 수정 날짜 : 20.11.06
       */
         case "search":
             http_response_code(200);
             $keyword=$_GET['keyword'];
-            if(empty($keyword)){
+            if(empty($keyword)){ 
                 $res->is_success = FALSE;
                 $res->code = 200;
                 $res->message = "필요 정보 모두 입력하지 않았습니다";

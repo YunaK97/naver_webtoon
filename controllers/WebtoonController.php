@@ -67,6 +67,27 @@ try {
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
+        /*
+               * API No. 3
+               * API Name : 웹툰 상세조회
+               * 마지막 수정 날짜 : 20.11.08
+               */
+        case "getWebtoonDetail":
+            http_response_code(200);
+            $webtoonIdx=$vars['webtoonIdx'];
+            if(!isValidWebtoonIdx($webtoonIdx)){
+                $res->is_success = FALSE;
+                $res->code = 300;
+                $res->message = "유효하지않은 idx입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+            $res->result = getWebtoonDetail($webtoonIdx);
+            $res->is_success = TRUE;
+            $res->code = 100;
+            $res->message = "웹툰 상세 조회 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);
