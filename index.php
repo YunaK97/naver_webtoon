@@ -13,7 +13,7 @@ date_default_timezone_set('Asia/Seoul');
 ini_set('default_charset', 'utf8mb4');
 
 //에러출력하게 하는 코드
-//error_reporting(E_ALL); ini_set("display_errors", 1);
+error_reporting(E_ALL); ini_set("display_errors", 1);
 
 //Main Server API
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
@@ -28,6 +28,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/users/{userIdx}', ['IndexController', 'getUserDetail']);
     $r->addRoute('POST', '/user', ['IndexController', 'createUser']); // 비밀번호 해싱 예시 추가
     $r->addRoute('GET', '/usertest', ['UserController', 'test']); //controller test
+    /* ******************  index   ****************** */
+    $r->addRoute('GET', '/banner', ['IndexController', 'banner']); // 배너 조회
     /* ******************   WEBTOON   ****************** */
     $r->addRoute('GET', '/mainpage', ['WebtoonController', 'main']); // 인기순 / 추천순 등등 update 해야함
     $r->addRoute('GET', '/search', ['SearchController', 'search']); // order by 고민

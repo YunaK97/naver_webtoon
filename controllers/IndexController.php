@@ -35,7 +35,6 @@ try {
          */
         case "getUsers":
             http_response_code(200);
-
             $res->result = getUsers();
             $res->isSuccess = TRUE;
             $res->code = 100;
@@ -73,6 +72,43 @@ try {
             $res->isSuccess = TRUE;
             $res->code = 100;
             $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+        /*
+             * API No. 26
+             * API Name : 테스트 Body & Insert API
+             * 마지막 수정 날짜 : 19.04.29
+             */
+        case "banner":
+            http_response_code(200);
+            $size=(int)$_GET['size'];
+            if(empty($size)){
+                $res->is_success = FALSE;
+                $res->code = 200;
+                $res->message = "size 입력하지 않았습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+            if(is_numeric($size)) {
+                if(bannersize()>=$size and $size >0) {
+                    $res->result = banner($size);
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "배너 조회 성공";
+                }else{
+                    $res->is_success = FALSE;
+                    $res->code = 202;
+                    $res->message = "size가 data보다 크거나 음수입니다.";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }
+            }else{
+                $res->is_success = FALSE;
+                $res->code = 201;
+                $res->message = "숫자를 입력";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
     }

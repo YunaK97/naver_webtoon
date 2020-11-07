@@ -1,5 +1,21 @@
 <?php
+//READ
+function banner($size)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT banner_photo,webtoon_idx,ifnull(episode_idx,0) as episode_idx
+                FROM BANNER where is_deleted='N' order by rand() limit " .$size;
 
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
 //READ
 function getUsers()
 {
@@ -66,6 +82,23 @@ function createUser($ID, $pwd, $name)
     $st = null;
     $pdo = null;
 
+}
+
+//READ
+function bannersize()
+{
+    $pdo = pdoSqlConnect();
+    $query = "select COUNT(*) AS count FROM BANNER where is_deleted='N';";
+
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['count'];
 }
 
 

@@ -26,7 +26,6 @@ function mainscreenNew()
     $pdo = pdoSqlConnect();
     $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore
         FROM WEBTOON
-         join DATE ON DATE.webtoon_idx=WEBTOON.idx
         left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
         WHERE TIMESTAMPDIFF(MONTH,updated_at,NOW())<1 AND is_completed='N'
         order by starscore desc;";
