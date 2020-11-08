@@ -18,14 +18,15 @@ function getSQLErrorException($errorLogs, $e, $req)
 }
 
 // JWT 발급
-function getJWT($userIdx, $secretKey) {
+function getJWT($userIdx,$gender, $secretKey) {
     $now_seconds = time();
 
     // iat: 발급시간, exp: 유효기간, userIdx: 유저 인덱스
     $payload = array(
         'iat' => $now_seconds,
         'exp' => $now_seconds + (60 * 60 * 24 * 365), // 유효기간 1년
-        'userIdx' => $userIdx
+        'userIdx' => $userIdx,
+        'gender' =>$gender
     );
 
 //    echo json_encode($payload);

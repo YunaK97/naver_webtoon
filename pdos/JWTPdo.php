@@ -18,7 +18,7 @@ function isValidUser($ID, $pwd){
 function getUserIdxByID($ID)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT userIdx FROM Users WHERE ID = ?;";
+    $query = "SELECT idx FROM USER WHERE nick = ?;";
 
     $st = $pdo->prepare($query);
     $st->execute([$ID]);
@@ -28,5 +28,20 @@ function getUserIdxByID($ID)
     $st = null;
     $pdo = null;
 
-    return $res[0]['userIdx'];
+    return $res[0]['idx'];
+}
+function getUserGenderById($ID)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT gender FROM USER WHERE nick = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$ID]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['gender'];
 }
