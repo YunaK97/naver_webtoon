@@ -4,6 +4,8 @@ require './pdos/DatabasePdo.php';
 require './pdos/IndexPdo.php';
 require './pdos/JWTPdo.php';
 require './pdos/webtoonPdo.php';
+require './pdos/userPdo.php';
+require './pdos/searchPdo.php';
 require './vendor/autoload.php';
 
 use \Monolog\Logger as Logger;
@@ -30,6 +32,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/usertest', ['UserController', 'test']); //controller test
     /* ******************  index   ****************** */
     $r->addRoute('GET', '/banner', ['IndexController', 'banner']); // 배너 조회
+    $r->addRoute('POST', '/login', ['IndexController', 'login']); // 로그인
     /* ******************   WEBTOON   ****************** */
     $r->addRoute('GET', '/mainpage', ['WebtoonController', 'main']); // 인기순 / 추천순 등등 update 해야함
     $r->addRoute('GET', '/search', ['SearchController', 'search']); // order by 고민
@@ -38,7 +41,11 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/episodes/{episodeIdx}', ['WebtoonController', 'getEpisode']); //에피소드 보기
     $r->addRoute('GET', '/episodes/{episodeIdx}/comments', ['WebtoonController', 'getComments']); // 댓글 조회
     /* ******************   USER   ****************** */
-
+    $r->addRoute('POST', '/user/episodes/{episodeIdx}/heart', ['UserController', 'createHeart']); //회원만 에피소드 하트누르기
+    $r->addRoute('POST', '/user/comments/{commentIdx}/like', ['UserController', 'createCommentsLike']); //댓글 좋아요
+    $r->addRoute('POST', '/user/comments/{commentIdx}/dislike', ['UserController', 'createCommentsDislike']); //댓글 싫어요
+    $r->addRoute('POST', '/user/episodes/{episodeIdx}/comments', ['UserController', 'createComment']); //댓글 생성
+    $r->addRoute('POST', '/user/episodes/{episodeIdx}/star-rating', ['UserController', 'createStar']); //별점 생성
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)
 //    $r->addRoute('GET', '/user/{id:\d+}', 'get_user_handler');

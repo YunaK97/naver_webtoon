@@ -75,9 +75,24 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
         /*
+               * API No. 15
+               * API Name : 로그인
+               * 마지막 수정 날짜 : 20.11.09
+               */
+        case "login":
+            http_response_code(200);
+            $jwt=$_SERVER['HTTP_X_ACCESS_TOKEN'];
+            $jwt = getJWT(1,'F', JWT_SECRET_KEY); // function.php 에 구현
+            $res->result->jwt = $jwt;
+            $res->is_success = TRUE;
+            $res->code = 100;
+            $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+        /*
              * API No. 26
              * API Name : 테스트 Body & Insert API
-             * 마지막 수정 날짜 : 19.04.29
+             * 마지막 수정 날짜 : 20.11.08
              */
         case "banner":
             http_response_code(200);
