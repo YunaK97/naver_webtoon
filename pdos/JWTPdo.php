@@ -45,3 +45,18 @@ function getUserGenderById($ID)
 
     return $res[0]['gender'];
 }
+function getUserNickByID($ID)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT gender FROM USER WHERE nick = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$ID]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['gender'];
+}

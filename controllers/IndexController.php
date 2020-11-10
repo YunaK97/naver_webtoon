@@ -81,9 +81,8 @@ try {
                */
         case "login":
             http_response_code(200);
-            $jwt=$_SERVER['HTTP_X_ACCESS_TOKEN'];
-            $jwt = getJWT(1,'F', JWT_SECRET_KEY); // function.php 에 구현
-            $res->result->jwt = $jwt;
+             // function.php 에 구현
+            $res->result->jwt = getJWT(1,'F','jennyk97', JWT_SECRET_KEY);
             $res->is_success = TRUE;
             $res->code = 100;
             $res->message = "테스트 성공";

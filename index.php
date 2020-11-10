@@ -15,7 +15,7 @@ date_default_timezone_set('Asia/Seoul');
 ini_set('default_charset', 'utf8mb4');
 
 //에러출력하게 하는 코드
-error_reporting(E_ALL); ini_set("display_errors", 1);
+//error_reporting(E_ALL); ini_set("display_errors", 1);
 
 //Main Server API
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
@@ -41,11 +41,18 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/episodes/{episodeIdx}', ['WebtoonController', 'getEpisode']); //에피소드 보기
     $r->addRoute('GET', '/episodes/{episodeIdx}/comments', ['WebtoonController', 'getComments']); // 댓글 조회
     /* ******************   USER   ****************** */
+    $r->addRoute('GET', '/user/episodes/{episodeIdx}', ['UserController', 'getEpisode']); //에피소드 보기
+    $r->addRoute('GET', '/user/episodes/{episodeIdx}/preview', ['UserController', 'getPreviewDetails']); //미리보기 조회
     $r->addRoute('POST', '/user/episodes/{episodeIdx}/heart', ['UserController', 'createHeart']); //회원만 에피소드 하트누르기
     $r->addRoute('POST', '/user/comments/{commentIdx}/like', ['UserController', 'createCommentsLike']); //댓글 좋아요
     $r->addRoute('POST', '/user/comments/{commentIdx}/dislike', ['UserController', 'createCommentsDislike']); //댓글 싫어요
     $r->addRoute('POST', '/user/episodes/{episodeIdx}/comments', ['UserController', 'createComment']); //댓글 생성
     $r->addRoute('POST', '/user/episodes/{episodeIdx}/star-rating', ['UserController', 'createStar']); //별점 생성
+    $r->addRoute('GET', '/user/more', ['UserController', 'getMore']); //더보기 조회
+    $r->addRoute('POST', '/user/webtoon/{webtoonIdx}/favorites', ['UserController', 'createFavorites']); //관심웹툰 등록
+    $r->addRoute('GET', '/user/webtoon/favorites', ['UserController', 'getFavorites']); //관심 조회
+    $r->addRoute('PATCH', '/user/webtoon/{webtoonIdx}/favorites/alarm', ['UserController', 'updateAlarm']); //알람 여부
+    $r->addRoute('GET', '/user/webtoon/look', ['UserController', 'getLookEpisode']); //최근 본웹툰 조회
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)
 //    $r->addRoute('GET', '/user/{id:\d+}', 'get_user_handler');

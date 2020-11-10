@@ -30,7 +30,8 @@ try {
             // Payload에 맞게 다시 설정 요함, 아래는 Payload에 userIdx를 넣기 위한 과정
             $userIdx = getUserIdxByID($req->userID);  // JWTPdo.php 에 구현
             $gender=getUserGenderById($req->userID);
-            $jwt = getJWT($userIdx,$gender, JWT_SECRET_KEY); // function.php 에 구현
+            $nick=$req->userID;
+            $jwt = getJWT($userIdx,$gender,$nick, JWT_SECRET_KEY); // function.php 에 구현
 
             $res->result->jwt = $jwt;
             $res->isSuccess = TRUE;

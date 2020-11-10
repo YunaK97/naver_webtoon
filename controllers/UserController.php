@@ -23,6 +23,30 @@ try {
             getLogs("./logs/errors.log");
             break;
         /*
+          * API No. 6
+         * API Name : 미리보기 정보 조회
+       * 마지막 수정 날짜 : 20.11.10
+       */
+        case "getPreviewDetails":
+            http_response_code(200);
+            $episodeIdx=$vars['episodeIdx'];
+            $jwt=$_SERVER['HTTP_X_ACCESS_TOKEN'];
+            $userIdxInToken=getDataByJWToken($jwt,JWT_SECRET_KEY)->userIdx;
+            if(!isValidEpisodeIdx($episodeIdx)) {
+                $res->is_success = FALSE;
+                $res->code = 300;
+                $res->message = "유효하지않은 idx입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+            $res->cookie=getCookie($userIdxInToken);
+            $res->result=getPreviewDetails($episodeIdx);
+            $res->is_success = TRUE;
+            $res->code = 100;
+            $res->message = "미리보기 정보 조회 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+        /*
                * API No. 8
                * API Name :회원만 에피소드 하트누르기
                * 마지막 수정 날짜 : 20.11.09
@@ -269,6 +293,181 @@ try {
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
+        /*
+              * API No. 14
+              * API Name : 더보기란
+              * 마지막 수정 날짜 : 20.11.09
+              */
+        case "getMore":
+            http_response_code(200);
+            $jwt=$_SERVER['HTTP_X_ACCESS_TOKEN'];
+            $userIdxInToken=getDataByJWToken($jwt,JWT_SECRET_KEY)->userIdx;
+            $res->result = getMore($userIdxInToken);
+            $res->is_success = TRUE;
+            $res->code = 100;
+            $res->message = "더보기 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+        /*
+              * API No. 16
+              * API Name : 관심 웹툰 목록 조회
+              * 마지막 수정 날짜 : 20.11.10
+              */
+        case "getFavorites":
+            http_response_code(200);
+            $jwt=$_SERVER['HTTP_X_ACCESS_TOKEN'];
+            $userIdxInToken=getDataByJWToken($jwt,JWT_SECRET_KEY)->userIdx;
+            $res->result = getFavorites($userIdxInToken);
+            $res->is_success = TRUE;
+            $res->code = 100;
+            $res->message = "관심웹툰 조회 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+        /*
+           * API No. 17
+             * API Name : 관심 웹툰 등록
+            * 마지막 수정 날짜 : 20.11.10
+         */
+        case "createFavorites":
+            http_response_code(200);
+            $jwt=$_SERVER['HTTP_X_ACCESS_TOKEN'];
+            $userIdxInToken=getDataByJWToken($jwt,JWT_SECRET_KEY)->userIdx;
+            $webtoonIdx=$vars['webtoonIdx'];
+            if(!isValidWebtoonIdx($webtoonIdx)) {
+                $res->is_success = FALSE;
+                $res->code = 300;
+                $res->message = "유효하지않은 idx입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+            if(alreadExistFavorites($webtoonIdx,$userIdxInToken)){
+                if(alreadydeleteFavorites($webtoonIdx,$userIdxInToken)){
+                    updateFavorites($webtoonIdx, $userIdxInToken);
+                    $res->is_success = TRUE;
+                    $res->code = 101;
+                    $res->message = "유저 웹툰 관심 다시 누르기 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else {
+                    deleteFavorites($webtoonIdx, $userIdxInToken);
+                    $res->is_success = TRUE;
+                    $res->code = 102;
+                    $res->message = "유저 관심 취소 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }
+            }else{
+                createFavorites($webtoonIdx,$userIdxInToken);
+                $res->is_success = TRUE;
+                $res->code = 100;
+                $res->message = "유저 웹툰 관심 등록 성공";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+        /*
+                  * API No. 18
+                    * API Name : 관심 웹툰 알람 등록
+                   * 마지막 수정 날짜 : 20.11.10
+                */
+        case "updateAlarm":
+            http_response_code(200);
+            $jwt=$_SERVER['HTTP_X_ACCESS_TOKEN'];
+            $userIdxInToken=getDataByJWToken($jwt,JWT_SECRET_KEY)->userIdx;
+            $webtoonIdx=$vars['webtoonIdx'];
+            if(!isValidWebtoonIdx($webtoonIdx)) {
+                $res->is_success = FALSE;
+                $res->code = 300;
+                $res->message = "유효하지않은 idx입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+            if(alreadExistFavorites($webtoonIdx,$userIdxInToken)){
+                if(alreadydeleteFavorites($webtoonIdx,$userIdxInToken)){
+                    $res->is_success = FALSE;
+                    $res->code = 200;
+                    $res->message = "관심등록 하지 않았습니다.";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else {
+                    if(checkAlarm($webtoonIdx, $userIdxInToken)){
+                        deleteAlarm($webtoonIdx, $userIdxInToken);
+                        $res->is_success = TRUE;
+                        $res->code = 100;
+                        $res->message = "알람 취소 성공";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        break;
+                    }
+                    else{
+                        updateAlarm($webtoonIdx, $userIdxInToken);
+                        $res->is_success = TRUE;
+                        $res->code = 100;
+                        $res->message = "알람 성공";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        break;
+                    }
+
+                }
+            }else{
+                $res->is_success = FALSE;
+                $res->code = 200;
+                $res->message = "관심등록 하지 않았습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+        /*
+                 * API No. 19
+               * API Name : 최근 본 웹툰 목록 조회
+             * 마지막 수정 날짜 : 20.11.10
+              */
+        case "getLookEpisode":
+            http_response_code(200);
+            $jwt=$_SERVER['HTTP_X_ACCESS_TOKEN'];
+            $userIdxInToken=getDataByJWToken($jwt,JWT_SECRET_KEY)->userIdx;
+            $res->result = getLookEpisode($userIdxInToken);
+            $res->is_success = TRUE;
+            $res->code = 100;
+            $res->message = "최근 본 웹툰 조회 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+        /*
+                * API No. 27
+                  * API Name :에피소드 만화 보기
+                 * 마지막 수정 날짜 : 20.11.10
+               */
+        case "getEpisode":
+            http_response_code(200);
+            $episodeIdx=$vars['episodeIdx'];
+            $jwt=$_SERVER['HTTP_X_ACCESS_TOKEN'];
+            $userIdxInToken=getDataByJWToken($jwt,JWT_SECRET_KEY)->userIdx;
+            if(!isValidEpisodeIdx($episodeIdx)){
+                $res->is_success = FALSE;
+                $res->code = 300;
+                $res->message = "유효하지않은 idx입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+            if(!ischeckEpisode($episodeIdx)){
+                $res->is_success = FALSE;
+                $res->code = 301;
+                $res->message = "아직 만화가 없습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+            $res->result =getEpisode($episodeIdx);
+            if(checkLook($userIdxInToken,$episodeIdx)){
+                if(checkLookDeleted($userIdxInToken,$episodeIdx)){
+                    updateLookdeletd($userIdxInToken,$episodeIdx);
+                }else{
+                    updateLookTime($userIdxInToken,$episodeIdx);
+                }
+            }else{
+                createLook($userIdxInToken,$episodeIdx);
+            }
+            $res->is_success = TRUE;
+            $res->code = 100;
+            $res->message = "에피소드 보기 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);
