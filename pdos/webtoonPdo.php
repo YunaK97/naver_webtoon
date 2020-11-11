@@ -66,7 +66,7 @@ function getWebtoonDetail($webtoonIdx)
     $query = "SELECT idx,title,author,details,profile,CASE WHEN daycount=1 THEN CONCAT(days,'요웹툰')
     WHEN daycount>=2 then CONCAT(group_concat(days separator ','),' 연재')
     else 0
-    END days,ifnull(favorite_count,0) as favorite_count
+    END days,ifnull(favorite_count,0) as favorite_count,color
 FROM WEBTOON
 left JOIN (SELECT webtoon_idx,COUNT(*) AS daycount FROM `DATE` group by webtoon_idx) as TEMP ON TEMP.webtoon_idx=WEBTOON.idx
 left join DATE ON DATE.webtoon_idx=WEBTOON.idx
@@ -89,7 +89,9 @@ function getEpisodeList($webtoonIdx)
     $query = "select idx,thumbnail,title,CASE WHEN TIMESTAMPDIFF(MONTH,created_at,now())<1
                  THEN CONCAT(30-TIMESTAMPDIFF(DAY,created_at,now()),'일 후 무료')
                     ELSE date_format(created_at,'%y.%m.%d')
-        END AS date,form,ifnull(starscore,0) as starscore
+        END AS date,form,ifnull(starscore,0) as starscore,case when TIMESTAMPDIFF(MONTH,created_at,now())<1
+THEN 'N'
+ELSE 'Y' END AS type
 from EPISODE
 left JOIN (SELECT episode_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.episode_idx=EPISODE.idx
 WHERE EPISODE.webtoon_idx=?

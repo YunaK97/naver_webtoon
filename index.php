@@ -4,7 +4,7 @@ require './pdos/DatabasePdo.php';
 require './pdos/IndexPdo.php';
 require './pdos/JWTPdo.php';
 require './pdos/webtoonPdo.php';
-require './pdos/userPdo.php';
+require './pdos/episodePdo.php';
 require './pdos/searchPdo.php';
 require './vendor/autoload.php';
 
@@ -22,37 +22,35 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     /* ******************   JWT   ****************** */
     $r->addRoute('POST', '/jwt', ['JWTController', 'createJwt']);   // JWT 생성: 로그인 + 해싱된 패스워드 검증 내용 추가
     $r->addRoute('GET', '/jwt', ['JWTController', 'validateJwt']);  // JWT 유효성 검사
-
     /* ******************   Test   ****************** */
     $r->addRoute('GET', '/', ['IndexController', 'index']);
     $r->addRoute('GET', '/test', ['IndexController', 'test']);
     $r->addRoute('GET', '/users', ['IndexController', 'getUsers']);
     $r->addRoute('GET', '/users/{userIdx}', ['IndexController', 'getUserDetail']);
     $r->addRoute('POST', '/user', ['IndexController', 'createUser']); // 비밀번호 해싱 예시 추가
-    $r->addRoute('GET', '/usertest', ['UserController', 'test']); //controller test
     /* ******************  index   ****************** */
     $r->addRoute('GET', '/banner', ['IndexController', 'banner']); // 배너 조회
     $r->addRoute('POST', '/login', ['IndexController', 'login']); // 로그인
     /* ******************   WEBTOON   ****************** */
     $r->addRoute('GET', '/mainpage', ['WebtoonController', 'main']); // 인기순 / 추천순 등등 update 해야함
     $r->addRoute('GET', '/search', ['SearchController', 'search']); // order by 고민
-    $r->addRoute('GET', '/webtoons/{webtoonIdx}', ['WebtoonController', 'getWebtoonDetail']);
-    $r->addRoute('GET', '/webtoons/{webtoonIdx}/episodes', ['WebtoonController', 'getEpisodeList']); //에피소드 리스트 구하기
-    $r->addRoute('GET', '/episodes/{episodeIdx}', ['WebtoonController', 'getEpisode']); //에피소드 보기
+    $r->addRoute('GET', '/webtoons/{webtoonIdx}/episodes', ['WebtoonController', 'getWebtoonDetail']);
+   // $r->addRoute('GET', '/webtoons/{webtoonIdx}/episodes', ['WebtoonController', 'getEpisodeList']); //에피소드 리스트 구하기
+   // $r->addRoute('GET', '/episodes/{episodeIdx}', ['WebtoonController', 'getEpisode']); //에피소드 보기
     $r->addRoute('GET', '/episodes/{episodeIdx}/comments', ['WebtoonController', 'getComments']); // 댓글 조회
     /* ******************   USER   ****************** */
-    $r->addRoute('GET', '/user/episodes/{episodeIdx}', ['UserController', 'getEpisode']); //에피소드 보기
-    $r->addRoute('GET', '/user/episodes/{episodeIdx}/preview', ['UserController', 'getPreviewDetails']); //미리보기 조회
-    $r->addRoute('POST', '/user/episodes/{episodeIdx}/heart', ['UserController', 'createHeart']); //회원만 에피소드 하트누르기
-    $r->addRoute('POST', '/user/comments/{commentIdx}/like', ['UserController', 'createCommentsLike']); //댓글 좋아요
-    $r->addRoute('POST', '/user/comments/{commentIdx}/dislike', ['UserController', 'createCommentsDislike']); //댓글 싫어요
-    $r->addRoute('POST', '/user/episodes/{episodeIdx}/comments', ['UserController', 'createComment']); //댓글 생성
-    $r->addRoute('POST', '/user/episodes/{episodeIdx}/star-rating', ['UserController', 'createStar']); //별점 생성
-    $r->addRoute('GET', '/user/more', ['UserController', 'getMore']); //더보기 조회
-    $r->addRoute('POST', '/user/webtoon/{webtoonIdx}/favorites', ['UserController', 'createFavorites']); //관심웹툰 등록
-    $r->addRoute('GET', '/user/webtoon/favorites', ['UserController', 'getFavorites']); //관심 조회
-    $r->addRoute('PATCH', '/user/webtoon/{webtoonIdx}/favorites/alarm', ['UserController', 'updateAlarm']); //알람 여부
-    $r->addRoute('GET', '/user/webtoon/look', ['UserController', 'getLookEpisode']); //최근 본웹툰 조회
+    $r->addRoute('GET', '/episodes/{episodeIdx}', ['EpisodeController', 'getEpisode']); //에피소드 보기
+    $r->addRoute('GET', '/episodes/{episodeIdx}/preview', ['EpisodeController', 'getPreviewDetails']); //미리보기 조회
+    $r->addRoute('POST', '/episodes/{episodeIdx}/heart', ['EpisodeController', 'createHeart']); //회원만 에피소드 하트누르기
+    $r->addRoute('POST', '/comments/{commentIdx}/like', ['EpisodeController', 'createCommentsLike']); //댓글 좋아요
+    $r->addRoute('POST', '/comments/{commentIdx}/dislike', ['EpisodeController', 'createCommentsDislike']); //댓글 싫어요
+    $r->addRoute('POST', '/episodes/{episodeIdx}/comments', ['EpisodeController', 'createComment']); //댓글 생성
+    $r->addRoute('POST', '/episodes/{episodeIdx}/star-rating', ['EpisodeController', 'createStar']); //별점 생성
+    $r->addRoute('GET', '/more', ['EpisodeController', 'getMore']); //더보기 조회
+    $r->addRoute('POST', '/webtoon/{webtoonIdx}/favorites', ['EpisodeController', 'createFavorites']); //관심웹툰 등록
+    $r->addRoute('GET', '/webtoon/favorites', ['EpisodeController', 'getFavorites']); //관심 조회
+    $r->addRoute('PATCH', '/webtoon/{webtoonIdx}/favorites/alarm', ['EpisodeController', 'updateAlarm']); //알람 여부
+    $r->addRoute('GET', '/webtoon/look', ['EpisodeController', 'getLookEpisode']); //최근 본웹툰 조회
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)
 //    $r->addRoute('GET', '/user/{id:\d+}', 'get_user_handler');
@@ -109,9 +107,9 @@ switch ($routeInfo[0]) {
                 $vars = $routeInfo[2];
                 require './controllers/JWTController.php';
                 break;
-            case 'UserController':
+            case 'EpisodeController':
                 $handler = $routeInfo[1][1]; $vars = $routeInfo[2];
-                require './controllers/UserController.php';
+                require './controllers/EpisodeController.php';
                 break;
             case 'WebtoonController':
                 $handler = $routeInfo[1][1]; $vars = $routeInfo[2];

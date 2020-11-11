@@ -76,7 +76,10 @@ WHERE EPISODE.idx=?;";
 function getMore($userIdxInToken)
 {
     $pdo = pdoSqlConnect();
-    $query = "select nick,cookie from USER WHERE idx=?;";
+    $query = "select nick,cookie_count
+from USER
+left join COOKIE ON COOKIE.user_idx=USER.idx
+WHERE idx=?;";
 
     $st = $pdo->prepare($query);
     $st->execute([$userIdxInToken]);

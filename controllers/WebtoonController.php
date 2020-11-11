@@ -82,27 +82,7 @@ try {
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            $res->result = getWebtoonDetail($webtoonIdx);
-            $res->is_success = TRUE;
-            $res->code = 100;
-            $res->message = "웹툰 상세 조회 성공";
-            echo json_encode($res, JSON_NUMERIC_CHECK);
-            break;
-        /*
-                      * API No. 4
-                      * API Name :웹툰 에피소드 목록 조회
-                      * 마지막 수정 날짜 : 20.11.08
-                      */
-        case "getEpisodeList":
-            http_response_code(200);
-            $webtoonIdx=$vars['webtoonIdx'];
-            if(!isValidWebtoonIdx($webtoonIdx)){
-                $res->is_success = FALSE;
-                $res->code = 300;
-                $res->message = "유효하지않은 idx입니다.";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                break;
-            }
+            $res->result->detail= getWebtoonDetail($webtoonIdx);
             if(!ischeckWebtoon($webtoonIdx)){
                 $res->is_success = FALSE;
                 $res->code = 301;
@@ -110,12 +90,13 @@ try {
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            $res->result =getEpisodeList($webtoonIdx);
+            $res->result->Episodelist =getEpisodeList($webtoonIdx);
             $res->is_success = TRUE;
             $res->code = 100;
-            $res->message = "에피소드 목록 조회 성공";
+            $res->message = "웹툰 상세 조회 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
         /*
         * API No. 5
           * API Name :에피소드 만화 보기
