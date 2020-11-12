@@ -51,7 +51,26 @@ function getUserDetail($userIdx)
 
     return $res[0];
 }
+//READ
+function getMore($userIdxInToken)
+{
+    $pdo = pdoSqlConnect();
+    $query = "select nick,cookie_count
+from USER
+left join COOKIE ON COOKIE.user_idx=USER.idx
+WHERE idx=?;";
 
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdxInToken]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0];
+}
 //READ
 function isValidUserIdx($userIdx)
 {

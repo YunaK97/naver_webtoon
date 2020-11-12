@@ -1,21 +1,39 @@
 <?php
 //READ
-function getCommentsUserIdx($commentIdx)
+function getEpisode($episodeIdx,$first,$size)
 {
     $pdo = pdoSqlConnect();
-    $query = "select user_idx FROM `COMMENTS` where idx=?;";
-
+    $query = "select idx,contents from CARTOONS WHERE episode_idx='$episodeIdx' order by idx limit $first,$size;";
     $st = $pdo->prepare($query);
-    $st->execute([$commentIdx]);
-    //    $st->execute();
+    $st->execute();
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
     $st = null;
     $pdo = null;
 
-    return $res[0]['user_idx'];
+    return $res;
 }
+//READ
+function getEpiosdeDetails($episodeIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "select title,comment_count,heart_count
+from EPISODE
+left JOIN (SELECT episode_idx,COUNT(*) AS comment_count FROM `COMMENTS` group by episode_idx) AS TEMP ON TEMP.episode_idx=EPISODE.idx
+left join (SELECT episode_idx,count(*) as heart_count FROM `HEART` group by episode_idx) AS TEMP1 ON TEMP1.episode_idx=EPISODE.idx
+WHERE idx=?;";
+    $st = $pdo->prepare($query);
+    $st->execute([$episodeIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0];
+}
+
 //READ
 function getWebtoonIdx($episodeIdx)
 {
@@ -37,7 +55,7 @@ function getWebtoonIdx($episodeIdx)
 function getCookie($userIdxInToken)
 {
     $pdo = pdoSqlConnect();
-    $query = "select cookie FROM `USER` where idx=?;";
+    $query = "select cookie_count FROM COOKIE WHERE user_idx=?;";
 
     $st = $pdo->prepare($query);
     $st->execute([$userIdxInToken]);
@@ -48,7 +66,7 @@ function getCookie($userIdxInToken)
     $st = null;
     $pdo = null;
 
-    return $res[0]['cookie'];
+    return $res[0]['cookie_count'];
 }
 //READ
 function getPreviewDetails($episodeIdx)
@@ -73,50 +91,46 @@ WHERE EPISODE.idx=?;";
     return $res[0];
 }
 //READ
-function getMore($userIdxInToken)
+function getComments($episodeIdx)
 {
     $pdo = pdoSqlConnect();
-    $query = "select nick,cookie_count
-from USER
-left join COOKIE ON COOKIE.user_idx=USER.idx
-WHERE idx=?;";
-
+    $query = "select nick,date_format(created_at,'%Y-%m-%d %H:%i') as date,contents,ifnull(like_count,0) as like_count,ifnull(dislike_count,0) as dislike_count
+from COMMENTS
+left JOIN (SELECT comment_idx,COUNT(*) AS like_count FROM `LIKECOMMENTS` where status='L' group by comment_idx) AS TEMP ON TEMP.comment_idx=COMMENTS.idx
+left JOIN (SELECT comment_idx,COUNT(*) AS dislike_count FROM `LIKECOMMENTS` where status='D' group by comment_idx) AS TEMP2 ON TEMP2.comment_idx=COMMENTS.idx
+WHERE episode_idx=? and is_deleted='N'
+order by created_at;";
     $st = $pdo->prepare($query);
-    $st->execute([$userIdxInToken]);
-    //    $st->execute();
+    $st->execute([$episodeIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
     $st = null;
     $pdo = null;
 
-    return $res[0];
+    return $res;
 }
 //READ
-function getLookEpisode($userIdxInToken)
+function getCommentsB($episodeIdx)
 {
-        $pdo = pdoSqlConnect();
-        $query = "select episode_idx,CONCAT(EPISODE.title,' 이어보기') AS episode ,WEBTOON.title as title ,WEBTOON.thumbnail as thumbnail,
-       CASE WHEN DATEDIFF(now(),LOOK.created_at)<1
-                 THEN '오늘'
-                    ELSE CONCAT(DATEDIFF(now(),LOOK.created_at),'일전')
-        END AS time
-from LOOK
-left join EPISODE ON EPISODE.idx=LOOK.episode_idx
-left join WEBTOON ON WEBTOON.idx=EPISODE.webtoon_idx
-where user_idx=? and LOOK.is_deleted='N';";
+    $pdo = pdoSqlConnect();
+    $query = "select nick,date_format(created_at,'%Y-%m-%d %H:%i') as date,contents,ifnull(like_count,0) as like_count,ifnull(dislike_count,0) as dislike_count
+from COMMENTS
+left JOIN (SELECT comment_idx,COUNT(*) AS like_count FROM `LIKECOMMENTS` where status='L' group by comment_idx) AS TEMP ON TEMP.comment_idx=COMMENTS.idx
+left JOIN (SELECT comment_idx,COUNT(*) AS dislike_count FROM `LIKECOMMENTS` where status='D' group by comment_idx) AS TEMP2 ON TEMP2.comment_idx=COMMENTS.idx
+WHERE episode_idx=? and is_deleted='N'
+order by like_count desc limit 15;";
+    $st = $pdo->prepare($query);
+    $st->execute([$episodeIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
 
-        $st = $pdo->prepare($query);
-        $st->execute([$userIdxInToken]);
-        //    $st->execute();
-        $st->setFetchMode(PDO::FETCH_ASSOC);
-        $res = $st->fetchAll();
+    $st = null;
+    $pdo = null;
 
-        $st = null;
-        $pdo = null;
-
-        return $res;
+    return $res;
 }
+
 
 //READ
 function getNick($userIdxInToken)
@@ -135,26 +149,8 @@ function getNick($userIdxInToken)
 
     return $res[0]['nick'];
 }
-//READ
-function getFavorites($userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "select webtoon_idx,thumbnail,title,alarm,date_format(updated_at,'%y.%m.%d') as date
-from FAVORITES
-join WEBTOON ON WEBTOON.idx=FAVORITES.webtoon_idx
-WHERE user_idx=? and FAVORITES.is_deleted='N';";
 
-    $st = $pdo->prepare($query);
-    $st->execute([$userIdxInToken]);
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
 
-    $st = null;
-    $pdo = null;
-
-    return $res;
-}
 //READ
 function alreadExistHeart($episodeIdx,$userIdxInToken)
 {
@@ -172,57 +168,8 @@ function alreadExistHeart($episodeIdx,$userIdxInToken)
 
     return $res[0]['exist'];
 }
-//READ
-function checkAlarm($webtoonIdx,$userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "select EXISTS(select * from FAVORITES where webtoon_idx = ? AND user_idx=? and alarm='Y')  exist;";
 
-    $st = $pdo->prepare($query);
-    $st->execute([$webtoonIdx,$userIdxInToken]);
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
 
-    $st = null;
-    $pdo = null;
-
-    return $res[0]['exist'];
-}
-//READ
-function alreadExistFavorites($webtoonIdx,$userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "select EXISTS(select * from FAVORITES where webtoon_idx = ? AND user_idx=?) exist;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$webtoonIdx,$userIdxInToken]);
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res[0]['exist'];
-}
-//READ
-function alreadydeleteFavorites($webtoonIdx,$userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "select EXISTS(select * from FAVORITES where webtoon_idx = ? AND user_idx=? and is_deleted='Y') exist;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$webtoonIdx,$userIdxInToken]);
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res[0]['exist'];
-}
 //READ
 function alreadydeleteHeart($episodeIdx,$userIdxInToken)
 {
@@ -241,10 +188,44 @@ function alreadydeleteHeart($episodeIdx,$userIdxInToken)
     return $res[0]['exist'];
 }
 //READ
+function checkkeepDeleted($userIdxInToken,$episodeIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "select EXISTS(select * from KEEP where episode_idx = ? AND user_idx=? and is_deleted='Y') exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$episodeIdx,$userIdxInToken]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['exist'];
+}
+//READ
 function checkLookDeleted($userIdxInToken,$episodeIdx)
 {
     $pdo = pdoSqlConnect();
     $query = "select EXISTS(select * from LOOK where episode_idx = ? AND user_idx=? and is_deleted='Y') exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$episodeIdx,$userIdxInToken]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['exist'];
+}
+//READ
+function checkKeep($userIdxInToken,$episodeIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "select EXISTS(select * from KEEP where episode_idx = ? AND user_idx=?) exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$episodeIdx,$userIdxInToken]);
@@ -291,6 +272,32 @@ function checkStar($userIdxInToken,$episodeIdx)
 
     return $res[0]['exist'];
 }
+//READ
+function checkCommentsTime($userIdxInToken,$episodeIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "select EXISTS(select * from COMMENTS where episode_idx = ? AND user_idx=? AND TIMESTAMPDIFF(MINUTE,created_at,NOW())<3) exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$episodeIdx,$userIdxInToken]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['exist'];
+}
+function createKeep($userIdxInToken,$episodeIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "INSERT INTO `KEEP` (user_idx,episode_idx) VALUES (?,?);";
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdxInToken,$episodeIdx]);
+    $st = null;
+    $pdo = null;
+}
 function createLook($userIdxInToken,$episodeIdx)
 {
     $pdo = pdoSqlConnect();
@@ -309,15 +316,7 @@ function createHeart($episodeIdx,$userIdxInToken)
     $st = null;
     $pdo = null;
 }
-function createFavorites($webtoonIdx,$userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "INSERT INTO `FAVORITES` (user_idx,webtoon_idx) VALUES (?,?);";
-    $st = $pdo->prepare($query);
-    $st->execute([$userIdxInToken,$webtoonIdx]);
-    $st = null;
-    $pdo = null;
-}
+
 function createStar($userIdxInToken,$episodeIdx,$score,$webtoonIdx)
 {
     $pdo = pdoSqlConnect();
@@ -336,21 +335,13 @@ function deleteHeart($episodeIdx,$userIdxInToken)
     $st = null;
     $pdo = null;
 }
-function deleteFavorites($webtoonIdx,$userIdxInToken)
+
+function updatekeepdeletd($userIdxInToken,$episodeIdx)
 {
     $pdo = pdoSqlConnect();
-    $query = "UPDATE `FAVORITES` SET is_deleted='Y' where user_idx=? and webtoon_idx=?;";
+    $query = "UPDATE `KEEP` SET is_deleted='N',created_at=CURRENT_TIMESTAMP where user_idx=? and episode_idx=?;";
     $st = $pdo->prepare($query);
-    $st->execute([$userIdxInToken,$webtoonIdx]);
-    $st = null;
-    $pdo = null;
-}
-function deleteAlarm($webtoonIdx,$userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "UPDATE `FAVORITES` SET alarm='N' where user_idx=? and webtoon_idx=?;";
-    $st = $pdo->prepare($query);
-    $st->execute([$userIdxInToken,$webtoonIdx]);
+    $st->execute([$userIdxInToken,$episodeIdx]);
     $st = null;
     $pdo = null;
 }
@@ -381,15 +372,7 @@ function updateHeart($episodeIdx,$userIdxInToken)
     $st = null;
     $pdo = null;
 }
-function updateFavorites($webtoonIdx,$userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "UPDATE `FAVORITES` SET is_deleted='N' where user_idx=? and webtoon_idx=?;";
-    $st = $pdo->prepare($query);
-    $st->execute([$userIdxInToken,$webtoonIdx]);
-    $st = null;
-    $pdo = null;
-}
+
 function updateAlarm($webtoonIdx,$userIdxInToken)
 {
     $pdo = pdoSqlConnect();
@@ -399,60 +382,25 @@ function updateAlarm($webtoonIdx,$userIdxInToken)
     $st = null;
     $pdo = null;
 }
-function deleteLike($commentIdx,$userIdxInToken)
+function updateTransaction($userIdxInToken, $episodeIdx)
 {
     $pdo = pdoSqlConnect();
-    $query = "UPDATE `LIKECOMMENTS` SET status='N' where user_idx=? and comment_idx=?;";
+    $query = "INSERT INTO TRANSACTION (user_idx, episode_idx, finish_at) VALUES (?,?,DATE_ADD(now(),interval 3 DAY));";
     $st = $pdo->prepare($query);
-    $st->execute([$userIdxInToken,$commentIdx]);
+    $st->execute([$userIdxInToken, $episodeIdx]);
     $st = null;
     $pdo = null;
 }
-function deleteDislike($commentIdx,$userIdxInToken)
+function updateCookie($cookie,$userIdxInToken)
 {
     $pdo = pdoSqlConnect();
-    $query = "UPDATE `LIKECOMMENTS` SET status='N' where user_idx=? and comment_idx=?;";
+    $query = "update COOKIE set cookie_count=cookie_count-? where user_idx=?;";
     $st = $pdo->prepare($query);
-    $st->execute([$userIdxInToken,$commentIdx]);
+    $st->execute([$cookie,$userIdxInToken]);
     $st = null;
     $pdo = null;
 }
-function updateCommentsLike($commentIdx,$userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "UPDATE `LIKECOMMENTS` SET status='L' where user_idx=? and comment_idx=?;";
-    $st = $pdo->prepare($query);
-    $st->execute([$userIdxInToken,$commentIdx]);
-    $st = null;
-    $pdo = null;
-}
-function updateCommentsDislike($commentIdx,$userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "UPDATE `LIKECOMMENTS` SET status='D' where user_idx=? and comment_idx=?;";
-    $st = $pdo->prepare($query);
-    $st->execute([$userIdxInToken,$commentIdx]);
-    $st = null;
-    $pdo = null;
-}
-function createCommentsLike($commentIdx,$userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "INSERT INTO `LIKECOMMENTS` (user_idx,comment_idx,status) VALUES (?,?,'L');";
-    $st = $pdo->prepare($query);
-    $st->execute([$userIdxInToken,$commentIdx]);
-    $st = null;
-    $pdo = null;
-}
-function createCommentsDislike($commentIdx,$userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "INSERT INTO `LIKECOMMENTS` (user_idx,comment_idx,status) VALUES (?,?,'D');";
-    $st = $pdo->prepare($query);
-    $st->execute([$userIdxInToken,$commentIdx]);
-    $st = null;
-    $pdo = null;
-}
+
 function createComments($nick,$userIdxInToken,$episodeIdx,$contents)
 {
     $pdo = pdoSqlConnect();
@@ -462,57 +410,8 @@ function createComments($nick,$userIdxInToken,$episodeIdx,$contents)
     $st = null;
     $pdo = null;
 }
-//READ
-function alreadyCommentsDislike($commentIdx,$userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "select EXISTS(select * from LIKECOMMENTS where comment_idx = ? AND user_idx=? and status='D') exist;";
 
-    $st = $pdo->prepare($query);
-    $st->execute([$commentIdx,$userIdxInToken]);
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
 
-    $st = null;
-    $pdo = null;
-
-    return $res[0]['exist'];
-}
-//READ
-function alreadyCommentsNo($commentIdx,$userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "select EXISTS(select * from LIKECOMMENTS where comment_idx = ? AND user_idx=? and status='N') exist;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$commentIdx,$userIdxInToken]);
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res[0]['exist'];
-}
-//READ
-function alreadyExistCommentsState($commentIdx,$userIdxInToken)
-{
-    $pdo = pdoSqlConnect();
-    $query = "select EXISTS(select * from LIKECOMMENTS where comment_idx = ? AND user_idx=?) exist;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$commentIdx,$userIdxInToken]);
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res[0]['exist'];
-}
 //READ
 function isValidCommentIdx($commentIdx)
 {
