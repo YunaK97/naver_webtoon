@@ -39,27 +39,158 @@ try {
                 break;
             }
             if($keyword==='월'||$keyword==='화'||$keyword==='수'||$keyword==='목'||$keyword==='금'||$keyword==='토'||$keyword==='일') {
-                $res->result = mainscreen($keyword);
-                $res->is_success = TRUE;
-                $res->code = 100;
-                $res->message = "메인페이지 조회 성공";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                break;
+                if($order==='여성인기순'){
+                    $res->result = mainscreenFemale($keyword);
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else if($order=='남성인기순'){
+                    $res->result = mainscreenMale($keyword);
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else if($order=='조회순'){
+                    $res->result = mainscreenLook($keyword);
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else if($order=='업데이트순'){
+                    $res->result = mainscreenUpdate($keyword);
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else if($order=='별점순'){
+                    $res->result = mainscreenStar($keyword);
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                } else if($order=='인기순'){
+                    $res->result = mainscreenFamous($keyword);
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else{
+                    $res->is_success = FALSE;
+                    $res->code = 201;
+                    $res->message = "order로 보낸 정보 올바르지않습니다.";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }
+
             }
             else if($keyword==='신작'){
-                $res->result = mainscreenNew();
-                $res->is_success = TRUE;
-                $res->code = 100;
-                $res->message = "메인페이지 조회 성공";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                break;
+                if($order==='여성인기순'){
+                    $res->result = mainscreenNewF();
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else if($order=='남성인기순'){
+                    $res->result = mainscreenNewM();
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else if($order=='조회순'){
+                    $res->result = mainscreenNewL();
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else if($order=='업데이트순'){
+                    $res->result = mainscreenNewU();
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else if($order=='별점순'){
+                    $res->result = mainscreenNew();
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                } else if($order=='인기순'){
+                    $res->result = mainscreenNewP();
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else{
+                    $res->is_success = FALSE;
+                    $res->code = 201;
+                    $res->message = "order로 보낸 정보 올바르지않습니다.";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }
+
             }else if($keyword==='완결'){
-                $res->result = mainscreenComplete();
-                $res->is_success = TRUE;
-                $res->code = 100;
-                $res->message = "메인페이지 조회 성공";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                break;
+                if($order==='여성인기순'){
+                    $res->result = mainscreenCompleteF();
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else if($order=='남성인기순'){
+                    $res->result = mainscreenCompleteM();
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else if($order=='조회순'){
+                    $res->result = mainscreenCompleteL();
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else if($order=='업데이트순'){
+                    $res->result = mainscreenCompleteU();
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else if($order=='별점순'){
+                    $res->result = mainscreenComplete();
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                } else if($order=='인기순'){
+                    $res->result = mainscreenCompleteP();
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "메인페이지 조회 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else{
+                    $res->is_success = FALSE;
+                    $res->code = 201;
+                    $res->message = "order로 보낸 정보 올바르지않습니다.";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }
             }
             else{
                 $res->is_success = FALSE;
@@ -68,52 +199,7 @@ try {
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-        /*
-         * API No. 4
-         * API Name : 테스트 API
-         * 마지막 수정 날짜 : 19.04.29
-         */
-        case "getUsers":
-            http_response_code(200);
-            $res->result = getUsers();
-            $res->isSuccess = TRUE;
-            $res->code = 100;
-            $res->message = "테스트 성공";
-            echo json_encode($res, JSON_NUMERIC_CHECK);
-            break;
-        /*
-         * API No. 5
-         * API Name : 테스트 Path Variable API
-         * 마지막 수정 날짜 : 19.04.29
-         */
-        case "getUserDetail":
-            http_response_code(200);
 
-            $res->result = getUserDetail($vars["userIdx"]);
-            $res->isSuccess = TRUE;
-            $res->code = 100;
-            $res->message = "테스트 성공";
-            echo json_encode($res, JSON_NUMERIC_CHECK);
-            break;
-        /*
-         * API No. 6
-         * API Name : 테스트 Body & Insert API
-         * 마지막 수정 날짜 : 19.04.29
-         */
-        case "createUser":
-            http_response_code(200);
-
-            // Packet의 Body에서 데이터를 파싱합니다.
-            $userID = $req->userID;
-            $pwd_hash = password_hash($req->pwd, PASSWORD_DEFAULT); // Password Hash
-            $name = $req->name;
-
-            $res->result = createUser($userID, $pwd_hash, $name);
-            $res->isSuccess = TRUE;
-            $res->code = 100;
-            $res->message = "테스트 성공";
-            echo json_encode($res, JSON_NUMERIC_CHECK);
-            break;
      /*
          * API No. 13
         * API Name : 더보기란
@@ -146,7 +232,7 @@ try {
                 $res->message = "토큰이 없습니다.";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
-                return;
+                break;
             }
         /*
                * API No. 13
@@ -169,21 +255,83 @@ try {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             $response = curl_exec ($ch);
             $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            echo "status_code:".$status_code."<br>";
+          //  echo "status_code:".$status_code."<br>";
             curl_close ($ch);
             if($status_code == 200) {
-                echo $response;
+              //  echo $response;
             } else {
-                echo "Error 내용:".$response;
+               // echo "Error 내용:".$response;
             }
-           // $res->result->jwt = getJWT(1,'F','jennyk97', JWT_SECRET_KEY);
-         //   $res->is_success = TRUE;
-          //  $res->code = 100;
-            $res->message = "테스트 성공";
-            echo json_encode($res, JSON_NUMERIC_CHECK);
-            break;
+
+            $arr=json_decode($response,true);
+            $error=$arr["resultcode"];
+            if($error=='024'){
+                $res->is_success = FALSE;
+                $res->code = 200;
+                $res->message = "인증 실패";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+            $nickname=$arr["response"]["nickname"];
+            $naver_id=$arr["response"]["id"];
+            $gender=$arr["response"]["gender"];
+            if(checkNaverid($naver_id)){
+                $userid=getUserIdx($naver_id);
+                $res->result->jwt = getJWT($userid,$gender,$nickname, JWT_SECRET_KEY);
+                $res->is_success = TRUE;
+                $res->code = 100;
+                $res->message = "로그인 성공";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }else{
+                createUser($nickname,$naver_id,$gender);
+                $userid=getUserIdx($naver_id);
+                createCookie($userid);
+                $res->result->jwt = getJWT($userid,$gender,$nickname, JWT_SECRET_KEY);
+                $res->result->is_success = TRUE;
+                $res->code = 100;
+                $res->message = "로그인 성공";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
         /*
-             * API No. 25
+                 * API No. 23
+                * API Name : 자동로그인
+               * 마지막 수정 날짜 : 20.11.12
+                 */
+        case "autologin":
+            http_response_code(200);
+            $jwt=$_SERVER['HTTP_X_ACCESS_TOKEN'];
+            // 1) JWT 유효성 검사
+            if(!empty($jwt)) {
+                if (!isValidJWT($jwt, JWT_SECRET_KEY)) { // function.php 에 구현
+                    $res->isSuccess = FALSE;
+                    $res->code = 202;
+                    $res->message = "유효하지 않은 토큰입니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                } else {
+                    $userIdxInToken=getDataByJWToken($jwt,JWT_SECRET_KEY)->userIdx;
+                   $nickname=getDataByJWToken($jwt,JWT_SECRET_KEY)->nick;
+                  $gender=getDataByJWToken($jwt,JWT_SECRET_KEY)->gender;
+                    $res->result->jwt = getJWT($userIdxInToken,$gender,$nickname, JWT_SECRET_KEY);
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "자동로그인 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }
+            }else{
+                $res->isSuccess = FALSE;
+                $res->code = 203;
+                $res->message = "토큰이 없습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                break;
+            }
+        /*
+             * API No. 24
              * API Name : 배너 조회
              * 마지막 수정 날짜 : 20.11.08
              */

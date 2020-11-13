@@ -30,21 +30,45 @@ try {
         case "search":
             http_response_code(200);
             $keyword=$_GET['keyword'];
-            if(empty($keyword)){ 
+            $size=$_GET['size'];
+            if(empty($keyword)||empty($size)){
                 $res->is_success = FALSE;
                 $res->code = 200;
                 $res->message = "필요 정보 모두 입력하지 않았습니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-                $res->result = search($keyword);
-                $res->is_success = TRUE;
-                $res->code = 100;
-                $res->message = "검색페이지 성공";
+            if(!is_numeric($size)){
+                $res->is_success = FALSE;
+                $res->code = 202;
+                $res->message = "size는 숫자로 입력하세요";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
-
-
+            }
+            if(getKeywordcount($keyword)){
+                $res->result->count=getKeywordcount($keyword);
+                if($size!=-1){
+                    $res->result->list = searchfive($keyword,$size);
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "검색페이지 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }else{
+                    $res->result->list = search($keyword);
+                    $res->is_success = TRUE;
+                    $res->code = 100;
+                    $res->message = "검색페이지 성공";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    break;
+                }
+            }else {
+                $res->is_success = FALSE;
+                $res->code = 201;
+                $res->message = "검색 결과가 없습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

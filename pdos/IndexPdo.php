@@ -90,17 +90,26 @@ function isValidUserIdx($userIdx)
 }
 
 
-function createUser($ID, $pwd, $name)
+function createUser($nickname, $naver_id, $gender)
 {
     $pdo = pdoSqlConnect();
-    $query = "INSERT INTO Users (ID, pwd, name) VALUES (?,?,?);";
-
+    $query = "INSERT INTO USER (nick,naver_idx,gender) VALUES (?,?,?);";
     $st = $pdo->prepare($query);
-    $st->execute([$ID, $pwd, $name]);
+    $st->execute([$nickname,$naver_id,$gender]);
 
     $st = null;
     $pdo = null;
+}
+function createCookie($userid)
+{
+    $pdo = pdoSqlConnect();
+    $query = "INSERT INTO COOKIE (user_idx,cookie_count) VALUES (?,0);";
 
+    $st = $pdo->prepare($query);
+    $st->execute([$userid]);
+
+    $st = null;
+    $pdo = null;
 }
 
 //READ
@@ -119,7 +128,36 @@ function bannersize()
 
     return $res[0]['count'];
 }
+//READ
+function checkNaverid($naver_id)
+{
+    $pdo = pdoSqlConnect();
+    $query = "select EXISTS(select * from USER where naver_idx = ?) exist;";
 
+    $st = $pdo->prepare($query);
+    $st->execute([$naver_id]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['exist'];
+}
+function getUserIdx($naver_id)
+{
+    $pdo = pdoSqlConnect();
+    $query = "select idx from USER WHERE naver_idx=?;";
+    $st = $pdo->prepare($query);
+    $st->execute([$naver_id]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['idx'];
+}
 
 // CREATE
 //    function addMaintenance($message){

@@ -25,12 +25,10 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/jwt', ['JWTController', 'validateJwt']);  // JWT 유효성 검사
     /* ******************   Test   ****************** */
     $r->addRoute('GET', '/', ['IndexController', 'index']);
-    $r->addRoute('GET', '/users', ['IndexController', 'getUsers']);
-    $r->addRoute('GET', '/users/{userIdx}', ['IndexController', 'getUserDetail']);
-    $r->addRoute('POST', '/user', ['IndexController', 'createUser']); // 비밀번호 해싱 예시 추가
     /* ******************  index   ****************** */
     $r->addRoute('GET', '/banner', ['IndexController', 'banner']); // 배너 조회
     $r->addRoute('POST', '/login', ['IndexController', 'login']); // 로그인
+    $r->addRoute('POST', '/autologin', ['IndexController', 'autologin']); //자동로그인
     $r->addRoute('GET', '/mainpage', ['IndexController', 'main']); // 인기순 / 추천순 등등 update 해야함
     $r->addRoute('GET', '/more', ['IndexController', 'getMore']); //더보기 조회
     /* ******************   WEBTOON   ****************** */
@@ -41,7 +39,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('DELETE', '/webtoon/keep', ['WebtoonController', 'deleteKeep']); //보관함 삭제
     $r->addRoute('GET', '/webtoon/favorites', ['WebtoonController', 'getFavorites']); //관심 조회
     $r->addRoute('GET', '/webtoon/look', ['WebtoonController', 'getLookEpisode']); //최근 본웹툰 조회
-    $r->addRoute('GET', '/webtoon/keep', ['WebtoonController', 'getKeepEpisode']); //최근 본웹툰 조회
+    $r->addRoute('GET', '/webtoon/keep', ['WebtoonController', 'getKeepEpisode']); //보관함웹툰 조회
     $r->addRoute('POST', '/webtoon/{webtoonIdx}/favorites', ['WebtoonController', 'createFavorites']); //관심웹툰 등록
     $r->addRoute('PATCH', '/webtoon/{webtoonIdx}/favorites/alarm', ['WebtoonController', 'updateAlarm']); //알람 여부
     /* ******************   EPISODE  ****************** */

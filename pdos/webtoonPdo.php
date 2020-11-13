@@ -1,7 +1,7 @@
 <?php
 
 //READ
-function mainscreen($keyword)
+function mainscreenStar($keyword)
 {
     $pdo = pdoSqlConnect();
     $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,
@@ -13,6 +13,127 @@ WHERE days=? and is_completed='N'
 order by starscore desc;";
     $st = $pdo->prepare($query);
    $st->execute([$keyword]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenFemale($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,updated_at,
+ CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+join DATE ON DATE.webtoon_idx=WEBTOON.idx
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+left JOIN (select count(*) as count,webtoon_idx
+FROM FAVORITES
+join USER ON USER.idx=FAVORITES.user_idx
+WHERE is_deleted='N' and gender='F'
+group by webtoon_idx) as temp2 on temp2.webtoon_idx=WEBTOON.idx
+WHERE days=? and is_completed='N'
+order by count desc;";
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenMale($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,updated_at,
+ CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+join DATE ON DATE.webtoon_idx=WEBTOON.idx
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+left JOIN (select count(*) as count,webtoon_idx
+FROM FAVORITES
+join USER ON USER.idx=FAVORITES.user_idx
+WHERE is_deleted='N' and gender='M'
+group by webtoon_idx) as temp2 on temp2.webtoon_idx=WEBTOON.idx
+WHERE days=? and is_completed='N'
+order by count desc;";
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenUpdate($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,updated_at,
+ CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+join DATE ON DATE.webtoon_idx=WEBTOON.idx
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+WHERE days=? and is_completed='N'
+order by updated_at desc;";
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenLook($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,updated_at,
+ CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+join DATE ON DATE.webtoon_idx=WEBTOON.idx
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+left JOIN (select webtoon_idx,count(*) as count from `LOOK` join EPISODE ON EPISODE.idx=LOOK.episode_idx) as T on T.webtoon_idx=WEBTOON.idx
+WHERE days=? and is_completed='N'
+order by count desc;";
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenFamous($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,updated_at,
+ CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+join DATE ON DATE.webtoon_idx=WEBTOON.idx
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+left JOIN (select count(*) as count,webtoon_idx
+FROM FAVORITES
+join USER ON USER.idx=FAVORITES.user_idx
+WHERE is_deleted='N'
+group by webtoon_idx) as temp2 on temp2.webtoon_idx=WEBTOON.idx
+WHERE days=? and is_completed='N'
+order by count desc;";
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
@@ -42,6 +163,122 @@ order by starscore desc;";
     return $res;
 }
 //READ
+function mainscreenNewF()
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,
+CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+left JOIN (select count(*) as count,webtoon_idx
+FROM FAVORITES
+join USER ON USER.idx=FAVORITES.user_idx
+WHERE is_deleted='N' and gender='F'
+group by webtoon_idx) as temp2 on temp2.webtoon_idx=WEBTOON.idx
+WHERE TIMESTAMPDIFF(MONTH,updated_at,NOW())<1 and is_completed='N'
+order by count desc;";
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenNewM()
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,
+CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+left JOIN (select count(*) as count,webtoon_idx
+FROM FAVORITES
+join USER ON USER.idx=FAVORITES.user_idx
+WHERE is_deleted='N' and gender='M'
+group by webtoon_idx) as temp2 on temp2.webtoon_idx=WEBTOON.idx
+WHERE TIMESTAMPDIFF(MONTH,updated_at,NOW())<1 and is_completed='N'
+order by count desc;";
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenNewL()
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,
+CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+left JOIN (select webtoon_idx,count(*) as count from `LOOK` join EPISODE ON EPISODE.idx=LOOK.episode_idx) as T on T.webtoon_idx=WEBTOON.idx
+WHERE TIMESTAMPDIFF(MONTH,updated_at,NOW())<1 and is_completed='N'
+order by count desc;";
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenNewU()
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,
+CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+WHERE TIMESTAMPDIFF(MONTH,updated_at,NOW())<1 and is_completed='N'
+order by updated_at desc;";
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenNewP()
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,
+CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+left JOIN (select count(*) as count,webtoon_idx
+FROM FAVORITES
+join USER ON USER.idx=FAVORITES.user_idx
+WHERE is_deleted='N'
+group by webtoon_idx) as temp2 on temp2.webtoon_idx=WEBTOON.idx
+WHERE TIMESTAMPDIFF(MONTH,updated_at,NOW())<1 and is_completed='N'
+order by count desc;";
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
 function mainscreenComplete()
 {
     $pdo = pdoSqlConnect();
@@ -51,6 +288,123 @@ FROM WEBTOON
 left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
 WHERE is_completed='Y'
 order by starscore desc;";
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenCompleteF()
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,
+CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+left JOIN (select count(*) as count,webtoon_idx
+FROM FAVORITES
+join USER ON USER.idx=FAVORITES.user_idx
+WHERE is_deleted='N' and gender='F'
+group by webtoon_idx) as temp2 on temp2.webtoon_idx=WEBTOON.idx
+WHERE is_completed='Y'
+order by count desc;";
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenCompleteM()
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,
+CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+left JOIN (select count(*) as count,webtoon_idx
+FROM FAVORITES
+join USER ON USER.idx=FAVORITES.user_idx
+WHERE is_deleted='N' and gender='M'
+group by webtoon_idx) as temp2 on temp2.webtoon_idx=WEBTOON.idx
+WHERE is_completed='Y'
+order by count desc;";
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenCompleteP()
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,
+CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+left JOIN (select count(*) as count,webtoon_idx
+FROM FAVORITES
+join USER ON USER.idx=FAVORITES.user_idx
+WHERE is_deleted='N'
+group by webtoon_idx) as temp2 on temp2.webtoon_idx=WEBTOON.idx
+WHERE is_completed='Y'
+order by count desc;";
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+
+//READ
+function mainscreenCompleteL()
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,
+CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+left JOIN (select webtoon_idx,count(*) as count from `LOOK` join EPISODE ON EPISODE.idx=LOOK.episode_idx) as T on T.webtoon_idx=WEBTOON.idx
+WHERE is_completed='Y'
+order by count desc;";
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+//READ
+function mainscreenCompleteU()
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT idx,title,author,thumbnail,ifnull(starscore,0) as starscore,
+CASE WHEN TIMESTAMPDIFF(DAY,updated_at,now())<1 THEN 'up' ELSE 'down' END UP,form,rest
+FROM WEBTOON
+left JOIN (SELECT webtoon_idx,AVG(score) AS starscore FROM `STARRATING`) AS TEMP ON TEMP.webtoon_idx=WEBTOON.idx
+WHERE is_completed='Y'
+order by updated_at desc;";
     $st = $pdo->prepare($query);
     $st->execute();
     $st->setFetchMode(PDO::FETCH_ASSOC);
